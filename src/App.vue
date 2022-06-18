@@ -19,16 +19,15 @@ import HelloWorld from './components/HelloWorld.vue'
     </nav>
 
     <div class="container">
+      <ul>
+        <li>
+          {{errors}}
+        </li>
+      </ul>
+      <form @submit.prevent="salvar">
 
-      <form>
-
-        <label>Nome</label>
-        <input type="text" placeholder="Nome">
-        <label>Quantidade</label>
-        <input type="number" placeholder="QTD">
-        <label>Valor</label>
-        <input type="text" placeholder="Valor">
-
+        <label>Questão</label>
+        <input type="text" placeholder="Questão" v-model="pergunta.questao">
         <button class="waves-effect waves-light btn-small">Salvar<i class="material-icons left">save</i></button>
 
       </form>
@@ -38,24 +37,23 @@ import HelloWorld from './components/HelloWorld.vue'
         <thead>
 
         <tr>
-          <th>NOME</th>
-          <th>QTD</th>
-          <th>VALOR</th>
-          <th>OPÇÕES</th>
+          <th>Questão</th>
+          <th>Data da Criação</th>
+          <th>Data da Modificação</th>
         </tr>
 
         </thead>
 
         <tbody>
 
-        <tr>
+        <tr v-for="pergunta of perguntas" :key="pergunta.id">
 
-          <td>Arduino</td>
-          <td>100</td>
-          <td>50.00</td>
+          <td>{{pergunta.questao}}</td>
+          <td>{{pergunta.created_at}}</td>
+          <td>{{pergunta.updated_at}}</td>
           <td>
-            <button class="waves-effect btn-small blue darken-1"><i class="material-icons">create</i></button>
-            <button class="waves-effect btn-small red darken-1"><i class="material-icons">delete_sweep</i></button>
+            <button @click='editar(pergunta)' class="waves-effect btn-small blue darken-1"><i class="material-icons">create</i></button>
+            <button @click='remover(pergunta)' class="waves-effect btn-small red darken-1"><i class="material-icons">delete_sweep</i></button>
           </td>
 
         </tr>
@@ -74,10 +72,73 @@ import HelloWorld from './components/HelloWorld.vue'
 import Pergunta from './services/perguntas'
 
   export default {
+
+    data(){
+      return {
+        pergunta :{
+          id: '',
+          questao : ''
+        },
+        perguntas :[],
+        errors: []
+      }
+    },
+
     mounted() {
-      Pergunta.listar().then(resposta => {
-        console.log(resposta)
-      })
+       this.listar()
+    },
+
+    methods:{
+
+      listar(){
+        Pergunta.listar().then(resposta => {
+          this.perguntas = resposta.data.posts
+        })
+      },
+
+      salvar(){
+
+        if(!this.pergunta.id){
+
+            Pergunta.salvar(this.pergunta).then(resposta =>{
+              this.pergunta = {}
+              alert('salvo com sucesso');
+              this.listar()
+              this.errors = []
+            }).catch(e => {
+              this.errors = e.response.data.message;
+            })
+
+        }else{
+          Pergunta.atualizar(this.pergunta).then(resposta =>{
+            this.pergunta = {}
+            alert('Atualizado com sucesso');
+            this.listar()
+            this.errors = []
+          }).catch(e => {
+            this.errors = e.response.data.message;
+          })
+        }
+
+      },
+
+      editar(pergunta){
+         this.pergunta = pergunta
+      },
+
+      remover(pergunta){
+         if (confirm('Deseja excluir a pergunta?')){
+           Pergunta.apagar(pergunta).then(resposta => {
+             this.listar()
+             this.errors = []
+           }).catch(e => {
+             this.errors = e.response.data.message;
+           })
+         }
+
+
+      }
+
     }
   }
 </script>
