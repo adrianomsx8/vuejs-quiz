@@ -76,7 +76,7 @@ import Pergunta from './services/perguntas'
     data(){
       return {
         pergunta :{
-          //id: '',
+          id: '',
           questao : ''
         },
         perguntas :[],
@@ -97,59 +97,44 @@ import Pergunta from './services/perguntas'
       },
 
       salvar(){
-       // console.log(this.pergunta);
 
-
-        Pergunta.salvar(this.pergunta).then(resposta =>{
-          this.pergunta = {}
-          alert('salvo com sucesso');
-          this.listar()
-          this.errors = []
-        }).catch(e => {
-          this.errors = e.response.data.message;
-        })
-
-      /*  if(!this.pergunta.id){
-
-            Pergunta.salvar(this.pergunta).then(resposta =>{
-              this.pergunta = {}
-              alert('salvo com sucesso');
-              this.listar()
-              this.errors = []
-            }).catch(e => {
-              this.errors = e.response.data.message;
-            })
-
-        }else{
-          Pergunta.atualizar(this.pergunta).then(resposta =>{
+        if(!this.pergunta.id){
+          Pergunta.salvar(this.pergunta).then(resposta => {
             this.pergunta = {}
-            alert('Atualizado com sucesso');
+            alert('Cadastrado com sucesso!')
             this.listar()
-            this.errors = []
+            this.errors = {}
           }).catch(e => {
-            this.errors = e.response.data.message;
+            this.errors = e.response.data.message
+          })
+        }else{
+          Pergunta.atualizar(this.pergunta).then(resposta => {
+            this.pergunta = {}
+            this.errors = {}
+            alert('Atualizado com sucesso!')
+            this.listar()
+          }).catch(e => {
+            this.errors = e.response.data.message
           })
         }
-        */
+
       },
+
 
       editar(pergunta){
          this.pergunta = pergunta
       },
 
       remover(pergunta){
-         if (confirm('Deseja excluir a pergunta?')){
-           Pergunta.apagar(pergunta).then(resposta => {
-             this.listar()
-             this.errors = []
-           }).catch(e => {
-             this.errors = e.response.data.message;
-           })
-         }
-
-
+        if(confirm('Deseja excluir a pergunta?')){
+          Pergunta.apagar(pergunta).then(resposta => {
+            this.listar()
+            this.errors = {}
+          }).catch(e => {
+            this.errors = e.response.data.message
+          })
+        }
       }
-
     }
   }
 </script>
