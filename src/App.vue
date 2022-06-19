@@ -76,7 +76,7 @@ import Pergunta from './services/perguntas'
     data(){
       return {
         pergunta :{
-          id: '',
+          //id: '',
           questao : ''
         },
         perguntas :[],
@@ -92,13 +92,24 @@ import Pergunta from './services/perguntas'
 
       listar(){
         Pergunta.listar().then(resposta => {
-          this.perguntas = resposta.data.posts
+          this.perguntas = resposta.data.perguntas
         })
       },
 
       salvar(){
+       // console.log(this.pergunta);
 
-        if(!this.pergunta.id){
+
+        Pergunta.salvar(this.pergunta).then(resposta =>{
+          this.pergunta = {}
+          alert('salvo com sucesso');
+          this.listar()
+          this.errors = []
+        }).catch(e => {
+          this.errors = e.response.data.message;
+        })
+
+      /*  if(!this.pergunta.id){
 
             Pergunta.salvar(this.pergunta).then(resposta =>{
               this.pergunta = {}
@@ -119,7 +130,7 @@ import Pergunta from './services/perguntas'
             this.errors = e.response.data.message;
           })
         }
-
+        */
       },
 
       editar(pergunta){
